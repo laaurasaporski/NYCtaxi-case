@@ -9,7 +9,7 @@ BASE_URL = "https://d37ci6vzurychx.cloudfront.net/trip-data"
 
 print(f"Vou baixar para: {LANDING}")
 
-# COMMAND ----------
+
 
 import os
 import shutil
@@ -29,7 +29,7 @@ for m in MONTHS:
 
 display(dbutils.fs.ls(LANDING))
 
-# COMMAND ----------
+
 
 from pyspark.sql import functions as F
 from functools import reduce
@@ -59,7 +59,7 @@ bronze_df = reduce(lambda a, b: a.unionByName(b), dfs)
 print(f"Linhas brutas ingeridas: {bronze_df.count():,}")
 bronze_df.printSchema()    #  na linha do df_mes, o tipo original era timestamp_ntz e o VendorID era integer. Padronizei isso pra timestamp e long no cast, o conflito que quebrou o mergeSchema foi resolvido na raiz.
 
-# COMMAND ----------
+
 
 (bronze_df.write
           .format("delta")
@@ -76,5 +76,5 @@ display(spark.sql(f"""
     ORDER BY _source_file
 """))
 
-# COMMAND ----------
+
 
