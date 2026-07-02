@@ -12,7 +12,7 @@ MAX_TRIP_HOURS = 24             # corrida acima de 24h ≈ erro
 
 print("Parâmetros de qualidade definidos.")
 
-# COMMAND ----------
+
 
 from pyspark.sql import functions as F
 
@@ -26,7 +26,6 @@ bronze = bronze.withColumn(
 
 print(f"Bronze carregada: {bronze.count():,} linhas")
 
-# COMMAND ----------
 
 rules = [
     # (nome,                      dimensão,        condição que vale True quando o registro PASSA)
@@ -46,7 +45,7 @@ rules = [
 print(f"{len(rules)} regras definidas.")
 print("Dimensões cobertas:", sorted(set(dim for _, dim, _ in rules)))
 
-# COMMAND ----------
+
 
 # 1. Para cada regra, cria uma coluna pass__<regra> (True = passou)
 flagged = bronze
@@ -74,7 +73,7 @@ total_records = flagged.count()
 
 print(f"Registros avaliados: {total_records:,}")
 
-# COMMAND ----------
+
 
 # Conta as reprovações de TODAS as regras numa única passada (1 agregação, não 11)
 agg_exprs = [
@@ -101,12 +100,11 @@ any_fail = row["__any_failure"]
 print(f"Registros com ao menos 1 falha: {any_fail:,} ({100*any_fail/total_records:.2f}%)")
 display(scorecard)
 
-# COMMAND ----------
+
 
 # MAGIC %md
 # MAGIC 850.704 registros (5,26%) tinham ao menos um problema de qualidade. (1 em cada 19 registros)
 
-# COMMAND ----------
 
 
 scorecard_hist = scorecard.withColumn("run_ts", F.current_timestamp())
@@ -120,7 +118,7 @@ scorecard_hist = scorecard.withColumn("run_ts", F.current_timestamp())
 print("Scorecard salvo no histórico: dq_results")
 display(spark.table(f"{CATALOG}.{SCHEMA}.dq_results").orderBy(F.desc("run_ts"), F.desc("failed_pct")))
 
-# COMMAND ----------
+
 
 # Isola os registros reprovados — SEM apagar.
 quarantine = flagged.filter(~F.col("is_valid")).select(
@@ -146,7 +144,7 @@ print(f"Quarentena: {q_count:,} registros isolados.")
 
 display(quarantine.select("total_amount", "passenger_count", "dq_failed_rules").limit(10))
 
-# COMMAND ----------
+
 
 # Mantém só os válidos, seleciona as colunas obrigatórias + derivações úteis para a análise
 silver = (flagged.filter(F.col("is_valid"))
