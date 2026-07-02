@@ -26,7 +26,7 @@ gold = silver.select(
 
 print(f"Gold gravada: {gold.count():,} linhas")
 
-# COMMAND ----------
+
 
 spark.sql(f"""
     CREATE OR REPLACE VIEW {CATALOG}.{SCHEMA}.vw_yellow_taxi AS
@@ -44,7 +44,6 @@ spark.sql(f"""
 
 print("View criada: vw_yellow_taxi")
 
-# COMMAND ----------
 
 # MAGIC %sql
 # MAGIC SELECT
