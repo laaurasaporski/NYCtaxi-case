@@ -10,9 +10,9 @@ gold   = spark.table(f"{CATALOG}.{SCHEMA}.gold_yellow_taxi")     # dado CONFIÁV
 print("Bronze (cru):", f"{bronze.count():,}")
 print("Gold (confiável):", f"{gold.count():,}")
 
-# COMMAND ----------
+-
 
-# INGÊNUA: no Bronze cru — inclui negativos, outliers e meses vazados
+# No Bronze cru — inclui negativos, outliers e meses vazados
 q1_naive = (bronze
             .withColumn("pickup_month", F.date_trunc("month", "tpep_pickup_datetime"))
             .groupBy("pickup_month")
@@ -37,7 +37,7 @@ q1 = (q1_trust.join(q1_naive, "pickup_month", "left")
 
 display(q1)
 
-# COMMAND ----------
+
 
 # INGÊNUA: maio no Bronze — inclui passenger_count nulo e zero
 q2_naive = (bronze
@@ -61,7 +61,7 @@ q2 = (q2_trust.join(q2_naive, "pickup_hour", "left")
 
 display(q2)
 
-# COMMAND ----------
+
 
 # MAGIC %md
 # MAGIC %md
@@ -69,7 +69,6 @@ display(q2)
 # MAGIC
 # MAGIC - **Ingestão:** 16.186.386 corridas (jan–mai/2023), schema padronizado na entrada.
 # MAGIC - **Qualidade:** 11 regras / 6 dimensões. **850.704 registros (5,26%)** reprovados e isolados em quarentena. **Silver confiável: 15.335.554**.
-# MAGIC - **Reconciliação:** 16.186.386 − 850.704 − 128 duplicatas = 15.335.554 ✅
+# MAGIC - **Reconciliação:** 16.186.386 − 850.704 − 128 duplicatas = 15.335.554 
 # MAGIC - **P1 — média do valor por mês:** corrigida pela remoção de valores ≤ 0 e meses vazados (ver `delta_pct`).
 # MAGIC - **P2 — passageiros por hora (maio):** corrigida pela remoção de `passenger_count` nulo/zero.
-# MAGIC
